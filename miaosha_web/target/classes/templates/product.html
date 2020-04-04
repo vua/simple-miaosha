@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.name}"></title>
+    <title>miaosha</title>
+    <script src="/js/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+    <style>
+        .miaosha{
+            width: 960px;
+            margin: auto;
+
+        }
+        .left img{
+            width: 220px;
+            height: 220px;
+        }
+        .left{
+            float: left;
+            width: 400px;
+        }
+        .right{
+            float: right;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+<div class="miaosha">
+    <div class="left">
+        <img th:src="'/image/'+${product.image}" alt="">
+    </div>
+    <div class="right">
+        <h1 th:text="${product.name}">Redmi note8</h1>
+        <h3><span>单价 : </span><span  th:text="${product.price}">1000.0 元</span></h3>
+        <h3><span>库存 : </span><span  v-text="capacity"></span></h3>
+
+        <button class="miaosha_bth" disabled="true" @click="getSecKillURL(id)" v-text="value">立即抢购</button>
+    </div>
+
+</div>
+    <script>
+        var app=new Vue({
+            el:".miaosha",
+            data:{
+                id:"[[${product.id}]]",
+                capacity: "[[${product.number}]]",
+                start_time: "[[${product.start_time}]]",
+                value:"立即抢购",
+            },
+            mounted() {
+                clearInterval(this.timer);
+                this.reckonByTime(this.start_time);
+            },
+            methods:{
+                reckonByTime:function(time){
+                    endtime = new Date(time);
+                    $this=this;
+                    this.timer = setInterval( () => {
+                        if(endtime.getTime()>new Date().getTime()){
+                            $this.freeze(-1);
+                            $this.value=$this.showtime(endtime);
+                        }else{
+                            $this.freeze(0);
+                            $this.value="立即抢购";
+                        }
+                    }, 1000);
+
+                },
+                freeze:function(time){
+                    document.getElementsByClassName("miaosha_bth")[0].disabled=true;
+                    if(time>=0)
+                        setTimeout("document.getElementsByClassName(\"miaosha_bth\")[0].disabled=false", time);
+                },
+                getSecKillURL:function (id) {
+                    this.freeze(3000);
+                    var $this=this;
+                    this.$http.get("/products/realUrl/",{params : {id:this.id}}).then(
+                        function (value) {
+                            this.trybuy(value.bodyText);
+                        },function (reason) {
+                            console.log(reason);
+                        }
+                    );
+                },
+                trybuy:function (url) {
+                    var $this=this;
+                    this.$http.post("/products/"+url+"/do_seckill",{id:this.id},{emulateJSON:true}).then(
+                        function (value) {
+                            //console.log(value.data);
+                            if(value=="success") {
+                                alert("抢购成功,请在半小时内完成支付");
+                                $this.capacity = $this.capacity - 1;
+                            }
+                            else{
+                                alert("抢购失败")
+                            }
+                        },function (reason) {
+                            console.log(reason);
+                        }
+                    )
+                },
+                showtime:function (endtime) {
+                    var nowtime = new Date(); //获取当前时间
+                          //定义结束时间
+                    var lefttime = endtime.getTime() - nowtime.getTime(),  //距离结束时间的毫秒数
+                        leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
+                        lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数
+                        leftm = Math.floor(lefttime/(1000*60)%60),  //计算分钟数
+                        lefts = Math.floor(lefttime/1000%60);  //计算秒数
+                    lefth=lefth<10?"0"+lefth:lefth;
+                    leftm=leftm<10?"0"+leftm:leftm;
+                    lefts=lefts<10?"0"+lefts:lefts;
+                    return leftd + "天" + lefth + ":" + leftm + ":" + lefts;  //返回倒计时的字符串
+                }
+            }
+        })
+        app.reckonByTime(app.start_time);
+    </script>
+</body>
+
+</html>
