@@ -17,6 +17,7 @@ Spring Cloud 简易分布式秒杀项目
 | 顺序消费 | ok || ------ | ------ |
 | rocketmq重复消费问题 | no || ------ | ------ |
 | 分布式事务,mq | no || ------ | ------ |
+| 想到了再加吧 | no || ------ | ------ |
 
 ## 模块关系
 ![模块关系](https://github.com/vua/simple-miaosha/blob/master/module.png)
