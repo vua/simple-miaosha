@@ -66,12 +66,12 @@ public class RedisConfig {
 //
 //        return jedisPool;
 //    }*/
-//    @Bean
-//    public RedissonClient redissonClient() throws IOException {
-//        RedissonClient client = Redisson.create(
-//                Config.fromYAML(new ClassPathResource("redisson.yml").getInputStream()));
-//        return client;
-//    }
+    @Bean
+    public RedissonClient redissonClient() throws IOException {
+        RedissonClient client = Redisson.create(
+                Config.fromYAML(new ClassPathResource("redisson.yml").getInputStream()));
+        return client;
+    }
     @Bean(name = "redisTemplate")
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
 

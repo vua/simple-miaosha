@@ -18,7 +18,7 @@ eureka:
 ribbon:
   ReadTimeout: 60000
   ConnectTimeout: 60000
-#rocketmq:
-#  name-server: 45.77.250.207:9876
-#  producer:
-#    group: miaosha
+rocketmq:
+  name-server: 45.77.250.207:9876
+  producer:
+    group: miaosha

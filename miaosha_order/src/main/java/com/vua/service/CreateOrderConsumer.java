@@ -1,7 +1,7 @@
 package com.vua.service;
 
-import com.vua.entity.Order;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.annotation.ConsumeMode;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-@RocketMQMessageListener(topic = "CREATE_ORDER", consumerGroup = "miaosha")
-//
+@RocketMQMessageListener(topic = "CREATE_ORDER", consumerGroup = "miaosha",consumeMode = ConsumeMode.ORDERLY)
 public class CreateOrderConsumer implements RocketMQListener<String> {
     @Autowired
     OrderService orderService;
