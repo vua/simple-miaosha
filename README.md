@@ -16,11 +16,14 @@ Spring Cloud 简易分布式秒杀项目
 | 页面静态化 | no || ------ | ------ |
 | 顺序消费 | ok || ------ | ------ |
 | rocketmq重复消费问题 | no || ------ | ------ |
-| 分布式事务,mq | no || ------ | ------ |
+| 分布式事务,mq | ok || ------ | ------ |
 | 全局异常处理 | no || ------ | ------ |
+| admin后台管理,权限认证略 | ok || ------ | ------ |
+| 异步编排提高吞吐量,CompleteableFuture | no || ------ | ------ |
 | 想到了再加吧 | no || ------ | ------ |
 
 ## 模块关系
+为了偷懒去除miaosha_admin模块,admin并入miaosha_web模块
 ![模块关系](https://github.com/vua/simple-miaosha/blob/master/module.png)
 ## 秒杀流程
 ![秒杀流程](https://github.com/vua/simple-miaosha/blob/master/process.png)
