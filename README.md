@@ -25,6 +25,7 @@ Spring Cloud 简易分布式秒杀项目
 
 ## 模块关系
 为了偷懒去除miaosha_admin模块,admin并入miaosha_web模块
+
 ![模块关系](https://github.com/vua/simple-miaosha/blob/master/module.png)
 ## 秒杀流程
 ![秒杀流程](https://github.com/vua/simple-miaosha/blob/master/process.png)
