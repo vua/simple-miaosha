@@ -25,3 +25,5 @@ eureka:
       defaultZone: http://45.77.250.207:8005/eureka/
   instance:
     prefer-ip-address: true
+rocketmq:
+  name-server: 45.77.250.207:9876

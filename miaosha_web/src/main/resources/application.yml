@@ -21,4 +21,4 @@ ribbon:
 rocketmq:
   name-server: 45.77.250.207:9876
   producer:
-    group: miaosha
+    group: create_order

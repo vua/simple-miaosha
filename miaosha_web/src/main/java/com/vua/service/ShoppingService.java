@@ -1,9 +1,9 @@
 package com.vua.service;
 
 
+import com.vua.entity.CreOrdMessage;
 import com.vua.entity.Product;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
-import org.apache.rocketmq.client.producer.SendCallback;
+
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.common.message.Message;
@@ -14,6 +14,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -30,11 +32,14 @@ import java.util.UUID;
 public class ShoppingService {
     @Autowired
     RedissonClient client;
-    @Autowired
-    DefaultMQProducer defaultMQProducer;
 
+    @Autowired
+    RedisTemplate redisTemplate;
     @Resource(name = "redisTemplate")
     HashOperations hashOperations;
+
+    @Resource(name = "redisTemplate")
+    ValueOperations<String, Product> valueOperations;
 
     @Autowired
     RocketMQTemplate rocketMQTemplate;
@@ -42,22 +47,35 @@ public class ShoppingService {
     public String tryBuy(int uid, int pid) {
         //query product's capacity
         RBucket<Product> bucket = client.getBucket("product::" + pid);
+
         RLock lock = client.getLock("redis:lock");
         try {
             lock.lock();
-            Product product = bucket.get();
+            Product product = valueOperations.get("product::" + pid);
+
             int n = product.getNumber();
             if (n > 0) {
+                try {
+                    //redisTemplate.multi();
+                    valueOperations.set("product::" + pid, product);
+                    //redisTemplate.exec();
+                } catch (Exception e) {
+                    //redisTemplate.discard();
+                }
                 String content = "user:" + uid + "&product:" + pid;
-                Message message = new Message("CREATE_ORDER", content.getBytes());
-                SendResult result=rocketMQTemplate.syncSendOrderly("CREATE_ORDER", message, uid + "");
+                CreOrdMessage message=new CreOrdMessage();
+                message.setPid(pid);
+                message.setUid(uid);
+
+                SendResult result = rocketMQTemplate.syncSend("CREATE_ORDER", message);
 
                 SendStatus status = result.getSendStatus();
-                if(status==SendStatus.SEND_OK){
+                if (status == SendStatus.SEND_OK) {
                     product.setNumber(n - 1);
                     bucket.set(product);
+
                     return "抢购成功,请支付订单";
-                }else{
+                } else {
                     return "抢购失败";
                 }
             } else {

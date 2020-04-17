@@ -1,2 +1,16 @@
 server:
   port: 9001
+spring:
+  application:
+    name: payment-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/miaosha_vua
+    username: root
+    password: 841103
+  jpa:
+    show-sql: true
+rocketmq:
+  name-server: 45.77.250.207:9876
+  producer:
+    group: update_order_status

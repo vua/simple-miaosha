@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @program: miaosha
  * @description:
@@ -25,5 +27,8 @@ public class UserService{
 
     public User verifyLogin(String name, String password) {
         return userRepository.findByNameAndPassword(name, password);
+    }
+    public List<User> findAll(){
+        return userRepository.findAll();
     }
 }

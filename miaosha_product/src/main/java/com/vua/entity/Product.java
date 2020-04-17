@@ -2,6 +2,7 @@ package com.vua.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -34,6 +35,8 @@ public class Product implements Serializable {
     private String image;
     private float price;
     private int number;
+    @Column(name="start_time")
     private Date start_time;
+    @Column(name="end_time")
     private Date end_time;
 }

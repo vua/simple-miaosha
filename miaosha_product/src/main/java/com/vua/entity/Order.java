@@ -2,7 +2,6 @@ package com.vua.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -34,7 +33,7 @@ public class Order {
     private int id;
     private int uid;
     private int pid;
+    private Date create_time;
     private int status; //0 未支付 1 已支付
-    @Column(name = "trade_no")
-    private String tradeNo;
+    private String trade_no;
 }

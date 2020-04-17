@@ -8,6 +8,8 @@ import com.alipay.api.AlipayResponse;
 import com.alipay.api.request.AlipayAcquireCreateandpayRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.vua.config.AlipayConfig;
+import com.vua.entity.Payment;
+import com.vua.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -36,16 +38,16 @@ public class PaymentController {
     }
     @PostMapping("/alipay")
     @ResponseBody
-    public String alipay(String outTradeNumber, BigDecimal totalAmount, HttpServletRequest request, ModelMap modelMap){
+    public String alipay(){
         AlipayTradePagePayRequest alipayRequest=new AlipayTradePagePayRequest();
         alipayRequest.setReturnUrl(AlipayConfig.return_payment_url);
         alipayRequest.setNotifyUrl(AlipayConfig.notify_payment_url);
         AlipayResponse form= null;
         Map<String, Object> map = new HashMap<>();
-        map.put("out_trade_no", System.currentTimeMillis()+"");
+        map.put("out_trade_no", "1586492781624");
         map.put("product_code", "FAST_INSTANT_TRADE_PAY");
-        map.put("total_amount", totalAmount);
-        map.put("subject", "秒杀测试商品");
+        map.put("total_amount", 0.01);
+        map.put("subject", "Redmi 8");
         String param = JSON.toJSONString(map);
         alipayRequest.setBizContent(param);
         try {
@@ -53,12 +55,26 @@ public class PaymentController {
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
-
         return form.getBody();
     }
+    @Autowired
+    PaymentService paymentService;
     @GetMapping("/alipay/callback/return")
     @ResponseBody
-    public String paymentReturn(){
+    public String paymentReturn(HttpServletRequest request){
+        Payment payment=new Payment();
+        payment.setId(1);
+        payment.setOut_trade_no(request.getParameter("out_trade_no"));
+        payment.setTrade_no(request.getParameter("trade_no"));
+        paymentService.insertPaymentAndSend2OrderService(payment);
+        //out_trade_no
+        //trade_no
+        //total_amount
+
+        request.getParameterMap().forEach((k,v)->
+            System.out.println(k+":"+v)
+        );
+
         return "支付成功";
     }
 

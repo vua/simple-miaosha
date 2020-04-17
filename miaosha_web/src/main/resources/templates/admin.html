@@ -6,19 +6,232 @@
     <title>Home</title>
     <script src="/js/vue.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <!--https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js-->
+    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0px;
+        }
+
+        .container {
+            width: 1080px;
+            margin: auto;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+
+            display: inline-block;
+            width: 100px;
+            box-shadow: 0px 0px 2px 2px #ccc;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        li:hover {
+            background: #ccc;
+        }
+
+        .data > div {
+            margin-top: 2px;
+            width: 1080px;
+            padding: 20px;
+            box-shadow: 2px 2px 2px 2px #ccc;
+            display: none;
+        }
+
+        table.gridtable {
+            font-family: verdana, arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+
+        input {
+            outline: none;
+            border: none;
+            width: 150px;
+        }
+
+        button {
+            padding: 4px 5px;
+            color: white;
+            border: none;
+        }
+
+        .update {
+            background: #007d65;
+        }
+
+        .delete {
+            background: crimson;
+        }
+    </style>
 </head>
 <body>
-    <div class="product" th:each="product:${products}" >
-        <form action="" method="post">
-            <input type="hidden" name="_method" value="put" />
-            <input type="text" th:value="${product.id}" name="id" style="display: none">
-            <input type="text" th:value="${product.name}" name="name">
-            <input type="text" th:value="${product.price}" name="price">
-            <input type="text" th:value="${product.number}" name="number">
-            <input type="text" th:value="${product.start_time}" name="start_time">
-            <input type="submit" value="update">
-        </form>
+<div class="container">
+    <div class="type">
+        <ul>
+            <li @click="active($event)" value="0">USER</li>
+            <li @click="active($event)" value="1">PRODUCT</li>
+            <li @click="active($event)" value="2">ORDER</li>
+        </ul>
     </div>
+    <div class="data">
+        <div class="active">
+            <table class="gridtable">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>password</th>
+                    <th>email</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                <tr th:each="user:${users}">
+                    <td th:text="${user.id}"></td>
+                    <td><input type="text" th:value="${user.name}"></td>
+                    <td><input type="text" th:value="${user.password}"></td>
+                    <td><input type="text" th:value="${user.email}"></td>
+                    <td>
+                        <button class="update" @click="update($event,'user')">update</button>
+                    </td>
+                    <td>
+                        <button class="delete" @click="delete($event)">delete</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table class="gridtable">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>price</th>
+                    <th>number</th>
+                    <th>start time</th>
+                    <th>end time</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                <tr th:each="product:${products}">
+                    <td th:text="${product.id}"></td>
+                    <td><input type="text" th:value="${product.name}"></td>
+                    <td><input type="text" th:value="${product.price}"></td>
+                    <td><input type="text" th:value="${product.number}"></td>
+                    <td><input type="text" th:value="${product.start_time}"></td>
+                    <td><input type="text" th:value="${product.end_time}"></td>
+                    <td>
+                        <button class="update" @click="update($event,'produce')">update</button>
+                    </td>
+                    <td>
+                        <button class="delete" @click="delete($event)">delete</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+<!--<div class="product" th:each="product:${products}" >-->
+<!--<form action="" method="post">-->
+<!--<input type="hidden" name="_method" value="put" />-->
+<!--<input type="text" th:value="${product.id}" name="id" style="display: none">-->
+<!--<input type="text" th:value="${product.name}" name="name">-->
+<!--<input type="text" th:value="${product.price}" name="price">-->
+<!--<input type="text" th:value="${product.number}" name="number">-->
+<!--<input type="text" th:value="${product.start_time}" name="start_time">-->
+<!--<input type="submit" value="update">-->
+<!--</form>-->
+<!--</div>-->
+<script>
+
+    var app = new Vue({
+        el: ".container",
+        data: {},
+        methods: {
+            active: function (event) {
+
+                var el = document.getElementsByClassName("active")[0];
+                el.style.display = 'none';
+                el.classList.remove("active");
+                el = document.getElementsByClassName("data")[0].children[Number(event.target.value)];
+                el.style.display = 'block';
+                el.classList.add("active");
+            },
+            update: function (event, type) {
+                if (type == 'user') {
+                    var id, name, password, email;
+                    $(event.target).parent().prevAll().each((index, item) => {
+                        if(index == 0)
+                            email = $(item).find('input').eq(0).val();
+                        else if (index == 1)
+                            password = $(item).find('input').eq(0).val();
+                        else if (index == 2)
+                        name = $(item).find('input').eq(0).val();
+                        else
+                            id = $(item).text();
+                    });
+                    console.log(id, name, password, email);
+                    this.$http.post("/admin/user",
+                        {
+                            id:id,
+                            name:name,
+                            password:password,
+                            email:email
+                        },
+                        {emulateJSON:true}).then(
+                        function (value) {
+                            if(value=="success") {
+
+                            }
+                            else{
+
+                            }
+                        },function (reason) {
+                            console.log(reason);
+                        }
+                    )
+                }else {
+
+                }
+            },
+            datele: function (event) {
+
+            }
+        },
+        mounted() {
+            var el = document.getElementsByClassName("active")[0];
+            el.style.display = 'block';
+        },
+    })
+</script>
 </body>
+
 </html>
